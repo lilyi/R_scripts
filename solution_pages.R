@@ -43,7 +43,7 @@ SS <- lapply(lan_list2, paste, 'sessions', sep="_")
 A <- lapply(lan_list2, paste, 'page', sep="_")
 AA <- mapply(append, A, SS, SIMPLIFY=TRUE)
 colnames(result) <- AA
-
+write.csv(result, "solution_top5.csv") 
 # FF <- function(lan){
 #   re <- sapply(page_list, solution, lan)
 #   return(re)
