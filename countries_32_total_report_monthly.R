@@ -88,11 +88,11 @@ myplotF <- function(cname, data, x, y){
 clist <- list("Australia","Austria","Belgium","Canada","Czechia","Denmark","France","Germany","Greece","Hong Kong","Hungary","India","Iran","Israel","Italy","Japan","Mexico","Netherlands","Norway","Poland","Portugal","Romania","South Africa","South Korea","Spain","Sweden","Switzerland","Taiwan","Thailand","Turkey","United Kingdom","United States")
 res_sessions32 <- lapply(clist, myfunction, stime, etime)
 print("Here!")
-i <- seq(from=1, to=32, by=4)
-k <- c(1:8)
+i <- seq(from=1, to=32, by=2)
+k <- c(1:16)
 arrangefunction <- function(i,k){
   title1 <- textGrob(paste("Total sessions (", tit, " 2017)", sep=""), gp = gpar(fontsize=14, font=2))#fontface="bold")
-  A <- do.call(arrangeGrob, c(res_sessions32[i:(i+3)], list(ncol=2),list(top=title1)))
+  A <- do.call(arrangeGrob, c(res_sessions32[i:(i+1)], list(ncol=1),list(top=title1)))
   ggsave(paste("Monthly/", tit, "/total/0", k, ".png", sep=""), A)
   return() 
 }
