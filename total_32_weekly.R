@@ -16,30 +16,40 @@ client.secret = "MlS4oatMCIMqzI3bpvWMeH3W"
 token <- Auth(client.id,client.secret)
 invisible(GetProfiles(token))
 
-# option_list <- list(
-#   make_option(c("-s", "--stime"), type="character", default="2017-03-26", 
-#               help="start time as [default= %default]", metavar="character"),
-#   make_option(c("-e", "--etime"), type="character", default="2017-03-31", 
-#               help="end time as [default= %default]", metavar="character"),
-#   make_option(c("-t", "--tit"), type="character", default="0326-0331", 
-#               help="month as [default= %default]", metavar="character")
-# )
-# 
-# opt_parser <- OptionParser(option_list=option_list)
-# opt <- parse_args(opt_parser)
-setwd('C:/Users/Lily/Documents/GA/R/report/2017/weekly/')
-# stime <- opt$stime
-# etime <- opt$etime
-# tit <- opt$tit
+option_list <- list(
+  make_option(c("-s1", "--stime1"), type="character", default="2017-04-23",
+              help="start time as [default= %default]", metavar="character"),
+  make_option(c("-e1", "--etime1"), type="character", default="2017-04-29",
+              help="end time as [default= %default]", metavar="character"),
+  make_option(c("-t1", "--tit1"), type="character", default="0423-0429",
+              help="month as [default= %default]", metavar="character"),
+  make_option(c("-s2", "--stime1"), type="character", default="2017-04-30",
+              help="start time as [default= %default]", metavar="character"),
+  make_option(c("-e2", "--etime1"), type="character", default="2017-05-06",
+              help="end time as [default= %default]", metavar="character"),
+  make_option(c("-t2", "--tit1"), type="character", default="0430-0506",
+              help="month as [default= %default]", metavar="character")
+)
 
-stime <- "2017-04-16"
-etime <- "2017-04-22"
-s2 <- "2017-04-23"
-e2 <- "2017-04-29"
+opt_parser <- OptionParser(option_list=option_list)
+opt <- parse_args(opt_parser)
+setwd('C:/Users/Lily/Documents/GA/R/report/2017/weekly/')
+stime1 <- opt$stime1
+etime1 <- opt$etime1
+tit1 <- opt$tit1
+stime2 <- opt$stime2
+etime2 <- opt$etime2
+tit2 <- opt$tit2
+
+# stime <- "2017-04-23"
+# etime <- "2017-04-29"
+# s2 <- "2017-04-30"
+# e2 <- "2017-05-06"
+
 #function to get SESSIONS of 32 COUNTRIES
-myfunction <- function(cname, stime, etime, s2, e2){
-  query.list_1 <- Init(table.id = "ga:3035421", start.date = stime,
-                 end.date = etime,
+myfunction <- function(cname, stime1, etime1, stime2, etime2){
+  query.list_1 <- Init(table.id = "ga:3035421", start.date = stime1,
+                 end.date = etime1,
                  dimensions="ga:date",
                  metrics="ga:sessions",
                  sort="ga:date",
@@ -48,8 +58,8 @@ myfunction <- function(cname, stime, etime, s2, e2){
   gaData_1 <- GetReportData(ga.query_1, token)
   as.data.frame(gaData_1)
   SUM_1 <- sum(gaData_1$sessions)
-  query.list_2 <- Init(table.id = "ga:3035421", start.date = s2,
-                       end.date = e2,
+  query.list_2 <- Init(table.id = "ga:3035421", start.date = stime2,
+                       end.date = etime2,
                        dimensions="ga:date",
                        metrics="ga:sessions",
                        sort="ga:date",
@@ -71,11 +81,10 @@ myfunction <- function(cname, stime, etime, s2, e2){
 }
 
 clist <- list("Australia","Austria","Belgium","Canada","Czechia","Denmark","France","Germany","Greece","Hong Kong","Hungary","India","Iran","Israel","Italy","Japan","Mexico","Netherlands","Norway","Poland","Portugal","Romania","South Africa","South Korea","Spain","Sweden","Switzerland","Taiwan","Thailand","Turkey","United Kingdom","United States")
-res_sessions32 <- sapply(clist, myfunction, stime, etime, s2, e2)
+res_sessions32 <- sapply(clist, myfunction, stime1, etime1, stime2, etime2)
 res <- as.data.frame(t(res_sessions32))
 row.names(res) <- clist
-colnames(res) <- c("0416-0422", "0423-0429", "dif", "sign")
-write.csv(res, 'weekly_sign_0429.csv')
-
+colnames(res) <- c(tit1, tit2, "dif", "sign")
+write.csv(res, paste("weekly_sign_", unlist(strsplit(tit2, "-"))[2], ".csv", sep=""))
 
 
