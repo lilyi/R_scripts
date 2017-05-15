@@ -17,30 +17,32 @@ token <- Auth(client.id,client.secret)
 invisible(GetProfiles(token))
 
 option_list <- list(
-  make_option(c("-s1", "--stime1"), type="character", default="2017-04-23",
-              help="start time as [default= %default]", metavar="character"),
-  make_option(c("-e1", "--etime1"), type="character", default="2017-04-29",
-              help="end time as [default= %default]", metavar="character"),
-  make_option(c("-t1", "--tit1"), type="character", default="0423-0429",
-              help="month as [default= %default]", metavar="character"),
-  make_option(c("-s2", "--stime1"), type="character", default="2017-04-30",
-              help="start time as [default= %default]", metavar="character"),
-  make_option(c("-e2", "--etime1"), type="character", default="2017-05-06",
-              help="end time as [default= %default]", metavar="character"),
-  make_option(c("-t2", "--tit1"), type="character", default="0430-0506",
-              help="month as [default= %default]", metavar="character")
+  make_option(c("-s", "--stime"), type="character", default="2017-04-30",
+              help="start time as [default= %default]", metavar="character", action = "store"),
+  make_option(c("-e", "--etime"), type="character", default="2017-05-06",
+              help="end time as [default= %default]", metavar="character", action = "store"),
+  make_option(c("-t", "--tit"), type="character", default="0430-0506",
+              help="month as [default= %default]", metavar="character", action = "store"),
+  make_option(c("-a", "--astime"), type="character", default="2017-05-07",
+              help="second start time as [default= %default]", metavar="character", action = "store"),
+  make_option(c("-b", "--betime"), type="character", default="2017-05-13",
+              help="second end time as [default= %default]", metavar="character", action = "store"),
+  make_option(c("-c", "--ctit"), type="character", default="0507-0513",
+              help="second month as [default= %default]", metavar="character", action = "store")
 )
-
+print("H1")
 opt_parser <- OptionParser(option_list=option_list)
+
 opt <- parse_args(opt_parser)
-setwd('C:/Users/Lily/Documents/GA/R/report/2017/weekly/')
+print("H2")
+
 stime1 <- opt$stime1
 etime1 <- opt$etime1
 tit1 <- opt$tit1
-stime2 <- opt$stime2
-etime2 <- opt$etime2
-tit2 <- opt$tit2
-
+stime2 <- opt$cstime
+etime2 <- opt$cetime
+tit2 <- opt$ctit
+setwd('C:/Users/Lily/Documents/GA/R/report/2017/weekly/')
 # stime <- "2017-04-23"
 # etime <- "2017-04-29"
 # s2 <- "2017-04-30"
@@ -86,5 +88,3 @@ res <- as.data.frame(t(res_sessions32))
 row.names(res) <- clist
 colnames(res) <- c(tit1, tit2, "dif", "sign")
 write.csv(res, paste("weekly_sign_", unlist(strsplit(tit2, "-"))[2], ".csv", sep=""))
-
-
