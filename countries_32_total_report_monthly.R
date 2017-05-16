@@ -55,6 +55,11 @@ setwd('C:/Users/Lily/Documents/GA/R/report/2017/')
 stime <- opt$stime
 etime <- opt$etime
 tit <- opt$tit
+mdir <- paste("mkdir C:\\Users\\Lily\\Documents\\GA\\R\\report\\2017\\bi-weekly\\", tit, "\\", sep="")
+fnames <- c("top3", "top3_dat", "total", "total_dat", "total_compare")
+f_list <- unlist(lapply(mdir, paste, fnames, sep=""))
+lapply(f_list, shell)
+
 # stime <- "2017-02-01"
 # etime <- "2017-03-05"
 # cname <- "Taiwan"
