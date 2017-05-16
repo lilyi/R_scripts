@@ -34,14 +34,15 @@ print("H1")
 opt_parser <- OptionParser(option_list=option_list)
 
 opt <- parse_args(opt_parser)
-print("H2")
 
-stime1 <- opt$stime1
-etime1 <- opt$etime1
-tit1 <- opt$tit1
-stime2 <- opt$cstime
-etime2 <- opt$cetime
+
+stime1 <- opt$stime
+etime1 <- opt$etime
+tit1 <- opt$tit
+stime2 <- opt$astime
+etime2 <- opt$betime
 tit2 <- opt$ctit
+print(opt)
 setwd('C:/Users/Lily/Documents/GA/R/report/2017/weekly/')
 # stime <- "2017-04-23"
 # etime <- "2017-04-29"
