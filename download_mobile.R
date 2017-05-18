@@ -31,7 +31,8 @@ etime <- opt$etime
 tit <- opt$tit
 stime <- "2017-04-01"
 etime <- "2017-04-30"
-lan_list <- c("/en","/en-us","/en-uk","/en-au","/en-in","/de-de","/es-es","/es-mx","/fr-fr","/it-it","/nl-nl","/sv-se","/zh-tw","/zh-hk","/pt-pt","/pl-pl","/ja-jp","/ko-kr","/cs-cz","/th-th")
+lan <- "/th-th/"
+lan_list <- c("/en/","/en-us/","/en-uk/","/en-au/","/en-in/","/de-de/","/es-es/","/es-mx/","/fr-fr/","/it-it/","/nl-nl/","/sv-se/","/zh-tw/","/zh-hk/","/pt-pt/","/pl-pl/","/ja-jp/","/ko-kr/","/cs-cz/","/th-th/")
 # lan_list2 <- c("en","en_us","en_uk","en_au","en_in","de_de","es_es","es_mx","fr_fr","it_it","nl_nl","sv_se","zh_tw","zh_hk","pt_pt","pl_pl","ja_jp","ko_kr","cs_cz", "th_th")
 
 solution <- function(lan){
@@ -44,7 +45,15 @@ solution <- function(lan){
                      filters = paste("ga:pagePath=@", lan, ";ga:pagePath=~product_x_down/product_app.php\\?",sep=""))
   ga.query <- QueryBuilder(query.list)
   gaData <- GetReportData(ga.query, token)
-  # SUM <- sum(gaData$sessions)
-  return(c(gaData, lan))
+  if(is.null(gaData)==FALSE){
+    ss <- gaData$sessions
+    pv <- gaData$pageViews
+  }else{
+    ss <- 0
+    pv <- 0
+    }
+  return(c(ss, pv))
 }
-result <- as.data.frame(lapply(lan_list, solution))
+result <- t(as.data.frame(sapply(lan_list, solution)))
+colnames(result) <- c("sessions", "pageviews")
+write.csv(result, paste("download_mobile_", tit, ".csv", sep="")) 
