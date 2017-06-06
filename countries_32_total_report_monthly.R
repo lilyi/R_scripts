@@ -44,7 +44,6 @@ option_list <- list(
 
 opt_parser <- OptionParser(option_list=option_list)
 opt <- parse_args(opt_parser)
-
 #no work
 #if (is.null(opt$file)){
 #  print_help(opt_parser)
@@ -55,8 +54,8 @@ setwd('C:/Users/Lily/Documents/GA/R/report/2017/')
 stime <- opt$stime
 etime <- opt$etime
 tit <- opt$tit
-mdir <- paste("mkdir C:\\Users\\Lily\\Documents\\GA\\R\\report\\2017\\bi-weekly\\", tit, "\\", sep="")
-fnames <- c("top3", "top3_dat", "total", "total_dat", "total_compare")
+mdir <- paste("mkdir C:\\Users\\Lily\\Documents\\GA\\R\\report\\2017\\Monthly\\", tit, "\\", sep="")
+fnames <- c("top3", "top3_dat", "total", "total_dat")
 f_list <- unlist(lapply(mdir, paste, fnames, sep=""))
 lapply(f_list, shell)
 

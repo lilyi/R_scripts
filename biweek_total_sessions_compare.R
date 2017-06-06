@@ -3,8 +3,8 @@ library(ggplot2)
 library(scales)
 setwd("C:/Users/Lily/Documents/GA/R/report/2017/bi-weekly/")
 # cname <- "Australia"
-this_date <- "0501-0512"
-last_date <- "0417-0428"
+this_date <- "0515-0526"
+last_date <- "0501-0512"
 clist <- list("Australia","Austria","Belgium","Canada","Czechia","Denmark","France","Germany","Greece","Hong Kong","Hungary","India","Iran","Israel","Italy","Japan","Mexico","Netherlands","Norway","Poland","Portugal","Romania","South Africa","South Korea","Spain","Sweden","Switzerland","Taiwan","Thailand","Turkey","United Kingdom","United States")
 compare_biweek <- function(cname){
   thisdata <- read.csv(paste(this_date, '/total_dat/', cname, '.csv', sep=""), header = T)
