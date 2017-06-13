@@ -12,7 +12,7 @@ stat <- function(cname){
   CMA=numeric(len)  
   for(i in 1:len)
   { 
-    CMA[i]=(Q1_data[i,3]+2*Q1_data[i+1,3]+Q1_data[i+2,3]+Q1_data[i+3,3]+Q1_data[i+4,3]+Q1_data[i+5,3]+Q1_data[i+6,3])/7
+    CMA[i]=(Q1_data[i,3]+Q1_data[i+1,3]+Q1_data[i+2,3]+Q1_data[i+3,3]+Q1_data[i+4,3]+Q1_data[i+5,3]+Q1_data[i+6,3])/7
   }
   Q1_data$CMA <- c(rep(0,3), CMA, rep(0,3))
   # Q1_data$d=Q1_data$sessions-Q1_data$CMA
@@ -31,70 +31,51 @@ stat <- function(cname){
   mean <- round(mean(CMA),2)
   upper <- round((mean + 1.5*std),2)
   lower <- round((mean - 1.5*std),2)
-  png("../res.png", width = 800, height = 450, units = "px")
+  png(paste("../", cname, "res.png"), width = 800, height = 450, units = "px")
   plot(Q1_data$sessions, type= "l")
   lines(Q1_data$CMA, type="l", col="red")
   abline(a=mean, b=0, col=4)
-  abline(a=upper, b=0, col=5)  
-  abline(a=lower, b=0, col=5)
+  abline(a=upper, b=0, col=3)  
+  abline(a=lower, b=0, col=3)
   dev.off()
   
-  bi_data <- read.csv(paste("C:/Users/Lily/Documents/GA/R/report/2017/bi-weekly/0529-0609/total_dat/", cname, ".csv", sep=""), header=T)
-  bi_data$day <- weekdays.Date(as.Date(as.character(bi_data$date), format="%Y%m%d"))
-  bi_data$day <- match(bi_data$day[], day_trans[,2])
-  bi_len <- length(bi_data$sessions)-6
-  bi_CMA=numeric(bi_len)  
-  for(i in 1:bi_len)
+  M4_data <- read.csv(paste("C:/Users/Lily/Documents/GA/R/report/2017/Monthly/April/total_dat/", cname, '.csv', sep=""), header=T)
+  M4_data$day <- weekdays.Date(as.Date(as.character(M4_data$date), format="%Y%m%d"))
+  M4_data$day <- match(M4_data$day[], day_trans[,2])
+  M4_len <- length(M4_data$sessions)-6
+  M4_CMA=numeric(len)  
+  for(i in 1:M4_len)
   { 
-    bi_CMA[i]=(bi_data[i,3]+2*bi_data[i+1,3]+bi_data[i+2,3]+bi_data[i+3,3]+bi_data[i+4,3]+bi_data[i+5,3]+bi_data[i+6,3])/7
+    M4_CMA[i]=(M4_data[i,3]+M4_data[i+1,3]+M4_data[i+2,3]+M4_data[i+3,3]+M4_data[i+4,3]+M4_data[i+5,3]+M4_data[i+6,3])/7
   }
-  bi_data$CMA <- c(rep(0,3), bi_CMA, rep(0,3))
-  plot(bi_data$sessions, type= "b")
-  lines(bi_data$CMA, type="b", col="red")
-  bi_std <- round(sd(bi_CMA),4)
-  bi_mean <- round(mean(bi_CMA),2)
-  bi_U <- round((bi_mean + 1*bi_std),2)
-  bi_L <- round((bi_mean - 1*bi_std),2)
+  M4_data$CMA <- c(rep(0,3), M4_CMA, rep(0,2))
+  png(paste("../", cname, "_M4.png"), width = 800, height = 450, units = "px")
+  plot(M4_data$sessions, type= "l")
+  lines(M4_data$CMA, type="l", col="red")
+  abline(a=mean, b=0, col=4)
+  abline(a=upper, b=0, col=3)  
+  abline(a=lower, b=0, col=3)
+  dev.off()
   
-  if(bi_U > upper){
-    U_alert <- "+"
-    L_alert <- ""
-    if(bi_L < lower){
-      L_alert <- "-"
-    }
-  }else if(bi_L < lower){
-    L_alert <- "-"
-    U_alert <- ""
-    if(bi_U > upper){
-      U_alert <- "+"
-    }
-  }else{
-    U_alert <- ""
-    L_alert <- ""
+  M5_data <- read.csv(paste("C:/Users/Lily/Documents/GA/R/report/2017/Monthly/May/total_dat/", cname, '.csv', sep=""), header=T)
+  M5_data$day <- weekdays.Date(as.Date(as.character(M5_data$date), format="%Y%m%d"))
+  M5_data$day <- match(M5_data$day[], day_trans[,2])
+  M5_len <- length(M5_data$sessions)-6
+  M5_CMA=numeric(len)  
+  for(i in 1:M5_len)
+  { 
+    M5_CMA[i]=(M5_data[i,3]+M5_data[i+1,3]+M5_data[i+2,3]+M5_data[i+3,3]+M5_data[i+4,3]+M5_data[i+5,3]+M5_data[i+6,3])/7
   }
-  U_dif <- abs(bi_U-upper)
-  L_dif <- abs(bi_L-lower)
-  # maxi_bi <- max(bi_data$sessions)
-  # mini_bi <- min(bi_data$sessions)
-  # if(maxi_bi>upper){
-  #   U_alert <- "+"
-  #   L_alert <- ""
-  #   if(mini_bi < lower){
-  #     L_alert <- "-"
-  #   }
-  # }else if(mini_bi < lower){
-  #   L_alert <- "-"
-  #   U_alert <- ""
-  #   if(maxi_bi > upper){
-  #     U_alert <- "+"
-  #   }
-  # }else{
-  #   U_alert <- ""
-  #   L_alert <- ""
-  # }
-  # U_dif <- abs(maxi_bi-upper)
-  # L_dif <- abs(mini_bi-lower)
-  return(c(mean, std, upper,lower, bi_mean, bi_std, bi_U, bi_L, U_dif, L_dif, U_alert, L_alert))
+  M5_data$CMA <- c(rep(0,3), M5_CMA, rep(0,3))
+  png(paste("../", cname, "_M5.png"), width = 800, height = 450, units = "px")
+  plot(M5_data$sessions, type= "l")
+  lines(M5_data$CMA, type="l", col="red")
+  abline(a=mean, b=0, col=4)
+  abline(a=upper, b=0, col=3)  
+  abline(a=lower, b=0, col=3)
+  dev.off()
+  # return(c(mean, std, upper,lower, bi_mean, bi_std, bi_U, bi_L, U_dif, L_dif, U_alert, L_alert))
+  return()
 }
 stat(cname)
 A <- as.data.frame(lapply(clist, stat))
