@@ -89,6 +89,8 @@ trend_Q1_M45 <- function(cname){
 # trend_Q1_M45(cname)
 A <- as.data.frame(lapply(clist, trend_Q1_M45))
 mon <- "April"
+
+#每月圖表 function
 trend_mon <- function(cname, mon){
   Q1_data <- read.csv(paste("C:/Users/Lily/Documents/GA/R/report/2017/Monthly/Q1/total_dat/", cname, '.csv', sep=""), header=T)
   Q1_data$day <- weekdays.Date(as.Date(as.character(Q1_data$date), format="%Y%m%d"))
@@ -102,7 +104,7 @@ trend_mon <- function(cname, mon){
   { 
     CMA[i]=(Q1_data[i,3]+Q1_data[i+1,3]+Q1_data[i+2,3]+Q1_data[i+3,3]+Q1_data[i+4,3]+Q1_data[i+5,3]+Q1_data[i+6,3])/7
   }
-  Q1_data$CMA <- c(rep(0,3), CMA, rep(0,3))
+  Q1_data$CMA <- c(rep(NA,3), CMA, rep(NA,3))
   std <- round(sd(CMA),4)
   mean <- round(mean(CMA),2)
   upper <- round((mean + 2*std),2)
@@ -117,7 +119,7 @@ trend_mon <- function(cname, mon){
   { 
     M_CMA[i]=(M_data[i,3]+M_data[i+1,3]+M_data[i+2,3]+M_data[i+3,3]+M_data[i+4,3]+M_data[i+5,3]+M_data[i+6,3])/7
   }
-  M_data$CMA <- c(rep(0,3), M_CMA, rep(0,3))
+  M_data$CMA <- c(rep(NA,3), M_CMA, rep(NA,3))
   png(paste("../", mon, "/", cname, ".png", sep=""), width = 800, height = 450, units = "px")
   plot(M_data$sessions, type= "l")
   lines(M_data$CMA, type="l", col="red")
@@ -138,24 +140,26 @@ trend_mon <- function(cname, mon){
          , x = "date"
          , y = "sessions")+
     scale_colour_manual("legend", values = c("#CC66FF", "#333333")) 
-    
+  ggsave(paste("../", mon, "/", cname, ".png", sep=""),p)
     
   ###
-  last_mon <- M_data[(length(M_data$date)-29):length(M_data$date),5]
+  
+  last_mon <- M_data[format(M_data$date, "%m")=="04",5]
+  last_mon <- last_mon[!is.na(last_mon)]
   U_count <- sum(last_mon > upper)
   L_count <- sum(last_mon < lower)
-  if(U_count>1){
+  if(U_count>1 & L_count>1){
+    U_alert <- "+"
+    L_alert <- "-"
+  }else if(U_count>1 & L_count<1){
     U_alert <- "+"
     L_alert <- ""
-    if(L_count<1){
-      L_alert <- "-"
-    }
-  }else{
+  }else if(U_count<1 & L_count>1){
     U_alert <- ""
     L_alert <- "-"
-    if(U_count>1){
-      U_alert <- "+"
-    }
+  }else{
+    U_alert <- ""
+    L_alert <- ""
   }
   return(c(mean, std, upper,lower, U_count, L_count, U_alert, L_alert))
 }
