@@ -1,12 +1,15 @@
 library(ggplot2)
 library(scales)
 mdir <- "mkdir C:\\Users\\Lily\\Documents\\GA\\R\\report\\2017\\Monthly\\trend\\"
-fnames <- "May"
-f_list <- unlist(lapply(mdir, paste, fnames, sep=""))
-lapply(f_list, shell)
+# fnames <- "May"
+# f_list <- unlist(lapply(mdir, paste, fnames, sep=""))
+# lapply(f_list, shell)
+setwd("C:/Users/Lily/Documents/GA/R/report/2017/Monthly/trend/")
 
-setwd(paste("C:/Users/Lily/Documents/GA/R/report/2017/Monthly/trend/", fnames, sep=""))
+# setwd(paste("C:/Users/Lily/Documents/GA/R/report/2017/Monthly/trend/", fnames, sep=""))
 # cname <- "Australia"
+
+# Q1 圖 function
 clist <- list("Australia","Austria","Belgium","Canada","Czechia","Denmark","France","Germany","Greece","Hong Kong","Hungary","India","Iran","Israel","Italy","Japan","Mexico","Netherlands","Norway","Poland","Portugal","Romania","South Africa","South Korea","Spain","Sweden","Switzerland","Taiwan","Thailand","Turkey","United Kingdom","United States")
 trend_Q1_M45 <- function(cname){
   Q1_data <- read.csv(paste("C:/Users/Lily/Documents/GA/R/report/2017/Monthly/Q1/total_dat/", cname, '.csv', sep=""), header=T)
@@ -140,12 +143,14 @@ trend_mon <- function(cname, mon){
          , x = "date"
          , y = "sessions")+
     scale_colour_manual("legend", values = c("#CC66FF", "#333333")) 
-  ggsave(paste("../", mon, "/", cname, ".png", sep=""),p)
+  ggsave(paste(mon, "/", cname, ".png", sep=""),p)
     
   ###
-  
-  last_mon <- M_data[format(M_data$date, "%m")=="04",5]
+  lastMonNumber <- format(M_data$date, "%m")[length(M_data$date)]
+  last_mon <- M_data[format(M_data$date, "%m")==lastMonNumber,5]
+  print(last_mon)
   last_mon <- last_mon[!is.na(last_mon)]
+  print(last_mon)
   U_count <- sum(last_mon > upper)
   L_count <- sum(last_mon < lower)
   if(U_count>1 & L_count>1){
@@ -161,10 +166,12 @@ trend_mon <- function(cname, mon){
     U_alert <- ""
     L_alert <- ""
   }
+  write.csv(M_data$CMA, paste(cname, ".csv", sep=""))
   return(c(mean, std, upper,lower, U_count, L_count, U_alert, L_alert))
 }
 # lapply(clist, trend_mon, "May")
-A <- as.data.frame(lapply(clist, trend_mon, "May"))
+Mon <- "May"
+A <- as.data.frame(lapply(clist, trend_mon, Mon))
 
 colnames(A) <- clist
 B <- t(A)
@@ -173,4 +180,4 @@ C <- as.data.frame(B)
 lan_list<- c("en-au", "", "", "", "cs-cz", "", "fr-fr", "de-de", "", "zh-hk", "", "en-in", "", "", "it-it", "ja-jp", "es-mx", "nl-nl", "", "pl-pl", "pt-pt", "", "", "ko-kr", "es-es", "sv-se", "", "zh-tw", "th-th", "", "en-uk", "en-us")
 C$lan <- lan_list
 as.data.frame(C)
-write.csv(C, paste("../", mon, "/stat_lan_v3.csv", sep=""))
+write.csv(C, paste(Mon, "/stat_lan_v3_3.csv", sep=""))
