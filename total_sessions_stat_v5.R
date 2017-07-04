@@ -131,3 +131,67 @@ as.data.frame(C)
 
 write.csv(C, paste(Mon, "/", Mon, ".csv", sep=""))
 ###
+#每月圖表 function2 undone
+trend_mon_2 <- function(cname, standardMonth, mon){
+  Q1_data <- read.csv(paste("C:/Users/Lily/Documents/GA/R/report/2017/Monthly/", standardMonth, "/total_dat/", cname, '.csv', sep=""), header=T)
+  Q1_data$day <- format(as.Date(as.character(Q1_data$date), format="%Y%m%d"), "%w")
+  len <- length(Q1_data$sessions)-6
+  CMA=numeric(len)  
+  for(i in 1:len)
+  { 
+    CMA[i]=(Q1_data[i,3]+Q1_data[i+1,3]+Q1_data[i+2,3]+Q1_data[i+3,3]+Q1_data[i+4,3]+Q1_data[i+5,3]+Q1_data[i+6,3])/7
+  }
+  Q1_data$CMA <- c(rep(NA,3), CMA, rep(NA,3))
+  std <- round(sd(CMA),4)
+  mean <- round(mean(CMA),2)
+  upper <- round((mean + 2*std),2)
+  lower <- round((mean - 2*std),2)
+  M_data <- read.csv(paste("C:/Users/Lily/Documents/GA/R/report/2017/Monthly/", mon, "/total_dat/", cname, '.csv', sep=""), header=T)
+  M_data$day <- format(as.Date(as.character(M_data$date), format="%Y%m%d"), "%w")
+  # M_data$day <- match(M_data$day[], day_trans[,2])
+  M_len <- length(M_data$sessions)-6
+  M_CMA=numeric(M_len)  
+  for(i in 1:M_len)
+  { 
+    M_CMA[i]=(M_data[i,3]+M_data[i+1,3]+M_data[i+2,3]+M_data[i+3,3]+M_data[i+4,3]+M_data[i+5,3]+M_data[i+6,3])/7
+  }
+  M_data$CMA <- c(rep(NA,3), M_CMA, rep(NA,3))
+  M_data$date <- as.Date(as.character(M_data$date), format="%Y%m%d")
+  p <- ggplot(M_data, aes(x1=sessions, x2=CMA))+#(M_data, aes(x=M_data$date, y=M_data$CMA))+#, linetype=country)) + 
+    geom_line(aes(x=M_data$date, y=M_data$sessions, colour="sessions"), M_data)+
+    geom_line(aes(x=M_data$date, y=M_data$CMA, colour="CMA"), M_data)+
+    geom_hline(yintercept=mean, color="#0099FF")+
+    geom_hline(yintercept=upper, color="#3399FF", linetype="dashed")+ #linetype="dashed"
+    geom_hline(yintercept=lower, color="#3399FF", linetype="dashed")+
+    scale_x_date(labels = date_format("%m%d"))+
+    labs(title = paste(cname, "_", standardMonth)
+         , x = "date"
+         , y = "sessions")+
+    scale_colour_manual("legend", values = c("#CC66FF", "#333333")) 
+  ggsave(paste(mon, "/", cname, "_", standardMonth, ".png", sep=""),p)
+  ###
+  lastMonNumber <- format(M_data$date, "%m")[length(M_data$date)]
+  last_mon <- M_data[format(M_data$date, "%m")==lastMonNumber,5]
+  # print(last_mon)
+  last_mon <- last_mon[!is.na(last_mon)]
+  # print(last_mon)
+  U_count <- sum(last_mon > upper)
+  L_count <- -sum(last_mon < lower)
+  total <- U_count + L_count
+  if(total > 6){
+    U_alert <- "+"
+    L_alert <- ""
+  }else if(total < -6){
+    U_alert <- ""
+    L_alert <- "-"
+  }else{
+    U_alert <- ""
+    L_alert <- ""
+  }
+  
+  write.csv(M_data, paste(mon, "/", cname, ".csv", sep=""))
+  return(c(mean, std, upper,lower, U_count, L_count, total, U_alert, L_alert, lastMonNumber, standardMonth))
+}
+report <- read.csv(paste(Mon, "/", Mon, ".csv", sep=""), header=T)
+
+trend_mon_2(report$X[1], report$standardMonth[1], "June")
