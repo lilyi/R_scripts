@@ -1,10 +1,10 @@
 library(ggplot2)
 library(scales)
 # make directory
-# mdir <- "mkdir C:\\Users\\Lily\\Documents\\GA\\R\\report\\2017\\Monthly\\trend\\"
-# fnames <- "May"
-# f_list <- unlist(lapply(mdir, paste, fnames, sep=""))
-# lapply(f_list, shell)
+mdir <- "mkdir C:\\Users\\Lily\\Documents\\GA\\R\\report\\2017\\Monthly\\trend\\"
+fnames <- "June" #####
+f_list <- unlist(lapply(mdir, paste, fnames, sep=""))
+lapply(f_list, shell)
 
 # set working directory
 setwd("C:/Users/Lily/Documents/GA/R/report/2017/Monthly/trend/")
@@ -72,23 +72,21 @@ trend_mon <- function(cname, standardMonth, mon){
   last_mon <- last_mon[!is.na(last_mon)]
   # print(last_mon)
   U_count <- sum(last_mon > upper)
-  L_count <- sum(last_mon < lower)
-  if(U_count>1 & L_count>1){
-    U_alert <- "+"
-    L_alert <- "-"
-  }else if(U_count>1 & L_count<1){
+  L_count <- -sum(last_mon < lower)
+  total <- U_count + L_count
+  if(total > 6){
     U_alert <- "+"
     L_alert <- ""
-  }else if(U_count<1 & L_count>1){
+  }else if(total < -6){
     U_alert <- ""
     L_alert <- "-"
   }else{
     U_alert <- ""
     L_alert <- ""
   }
-
+  
   write.csv(M_data, paste(mon, "/", cname, ".csv", sep=""))
-  return(c(mean, std, upper,lower, U_count, L_count, U_alert, L_alert, lastMonNumber))
+  return(c(mean, std, upper,lower, U_count, L_count, total, U_alert, L_alert, lastMonNumber, standardMonth))
 }
 
 standardMonth <- "Q1" #Q1/April
@@ -97,17 +95,39 @@ Mon <- "April" ##### modify the month here
 A <- as.data.frame(lapply(clist, trend_mon, standardMonth, Mon))
 colnames(A) <- clist
 B <- t(A)
-colnames(B) <- c("mean", "std", "upper", "lower", "U_count", "L_count", "U_alert", "L_alert", "lastMonNumber")
+colnames(B) <- c("mean", "std", "upper", "lower", "U_count", "L_count", "total", "U_alert", "L_alert", "lastMonNumber", "standardMonth")
 C <- as.data.frame(B)
 lan_list<- c("en-au", "", "", "", "cs-cz", "", "fr-fr", "de-de", "", "zh-hk", "", "en-in", "", "", "it-it", "ja-jp", "es-mx", "nl-nl", "", "pl-pl", "pt-pt", "", "", "ko-kr", "es-es", "sv-se", "", "zh-tw", "th-th", "", "en-uk", "en-us")
 C$lan <- lan_list
 as.data.frame(C)
 write.csv(C, paste(Mon, "/", Mon, "_", standardMonth, ".csv", sep=""))
 ###
-report <- read.csv(paste(Mon, "/", Mon, ".csv", sep=""), header=T)
+report <- read.csv(paste(Mon, "/", Mon, "_", standardMonth, ".csv", sep=""), header=T)
 # 當在 check "April" 時(繪出 2-4 月圖)，
 # 若"四月份"超出上下界，則下次在 check "May" 時，
 # 用 "April" 為基準統計值去檢視"五月"，
 # 依此類推
+# 往後要觀察各國是否成長或衰退，以 total 欄來判斷
+# adjustCountrylist <- as.character(report[(abs(report$total) > 6),1])
+adjustCountrylist <- cbind(as.character(report[(abs(report$total) > 6),1]), as.character(report[(abs(report$total) > 6),12]))
+diff <- setdiff(clist, adjustCountrylist)
+diff <- cbind(as.character(diff), "April")
+# diff <- setdiff(adjustCountrylist, clist)
+class(diff)
+# standardMonth <- "April" #Q1/April
+Mon <- "May" ##### modify the month here
+A1 <- as.data.frame(lapply(adjustCountrylist[,1], trend_mon, adjustCountrylist[1,2], Mon))
+A2 <- as.data.frame(lapply(diff[,1], trend_mon, diff[1,2], Mon))
+A <- cbind(A1, A2)
+colnames(A) <- c(adjustCountrylist[,1], diff[,1])
+B <- t(A)
+colnames(B) <- c("mean", "std", "upper", "lower", "U_count", "L_count", "total", "U_alert", "L_alert", "lastMonNumber", "standardMonth")
+C <- as.data.frame(B)
+C <- C[with(C, order(row.names(C))), ]
 
+lan_list<- c("en-au", "", "", "", "cs-cz", "", "fr-fr", "de-de", "", "zh-hk", "", "en-in", "", "", "it-it", "ja-jp", "es-mx", "nl-nl", "", "pl-pl", "pt-pt", "", "", "ko-kr", "es-es", "sv-se", "", "zh-tw", "th-th", "", "en-uk", "en-us")
+C$lan <- lan_list
+as.data.frame(C)
 
+write.csv(C, paste(Mon, "/", Mon, ".csv", sep=""))
+###
