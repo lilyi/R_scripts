@@ -2,13 +2,13 @@ library(ggplot2)
 library(scales)
 
 makeFolder <- function(fname){
-  dir("C:\\Users\\Lily\\Documents\\GA\\R\\report\\2017\\Monthly\\trend")
+  dir("C:\\Users\\Lily\\Documents\\GA\\R\\report\\2017\\bi-weekly\\trend")
   e <- dir()
   if(fname %in% e){
     print(paste("Folder", fname, "exits.", sep=" "))
   }else{
     # make directory
-    mdir <- "mkdir C:\\Users\\Lily\\Documents\\GA\\R\\report\\2017\\Monthly\\trend\\"
+    mdir <- "mkdir C:\\Users\\Lily\\Documents\\GA\\R\\report\\2017\\bi-weekly\\trend\\"
     f_list <- unlist(lapply(mdir, paste, fname, sep=""))
     lapply(f_list, shell)
     print(paste("Folder", fname, "created.", sep=" "))
@@ -16,14 +16,14 @@ makeFolder <- function(fname){
 }
 
 #每月圖表 function final 適用於五月(含)之後的觀察
-monthlyTrend <- function(cname, standardMonth, total, SDmonth, mon){
-  setwd("C:/Users/Lily/Documents/GA/R/report/2017/Monthly/trend/")
-
-  if(abs(as.numeric(total)) > 6){
-    standardMonth <- SDmonth
-  }else{
-    standardMonth <- standardMonth
-  }
+monthlyTrend <- function(cname, standardMonth, SDmonth, mon){
+  setwd("C:/Users/Lily/Documents/GA/R/report/2017/bi-weekly/trend/")
+# 
+#   if(abs(as.numeric(total)) > 6){
+#     standardMonth <- SDmonth
+#   }else{
+#     standardMonth <- standardMonth
+#   }
   standard_data <- read.csv(paste("C:/Users/Lily/Documents/GA/R/report/2017/Monthly/", standardMonth, "/total_dat/", cname, '.csv', sep=""), header=T)
   standard_data$day <- format(as.Date(as.character(standard_data$date), format="%Y%m%d"), "%w")
   len <- length(standard_data$sessions)-6
@@ -37,7 +37,7 @@ monthlyTrend <- function(cname, standardMonth, total, SDmonth, mon){
   mean <- round(mean(CMA),2)
   upper <- round((mean + 2*std),2)
   lower <- round((mean - 2*std),2)
-  M_data <- read.csv(paste("C:/Users/Lily/Documents/GA/R/report/2017/Monthly/", mon, "/total_dat/", cname, '.csv', sep=""), header=T)
+  M_data <- read.csv(paste("C:/Users/Lily/Documents/GA/R/report/2017/bi-weekly/", mon, "/total_dat/", cname, '.csv', sep=""), header=T)
   M_data$day <- format(as.Date(as.character(M_data$date), format="%Y%m%d"), "%w")
   # M_data$day <- match(M_data$day[], day_trans[,2])
   M_len <- length(M_data$sessions)-6
@@ -69,10 +69,10 @@ monthlyTrend <- function(cname, standardMonth, total, SDmonth, mon){
   U_count <- sum(last_mon > upper)
   L_count <- -sum(last_mon < lower)
   total <- U_count + L_count
-  if(total > 6){
+  if(total > 3){
     U_alert <- "+"
     L_alert <- ""
-  }else if(total < -6){
+  }else if(total < -3){
     U_alert <- ""
     L_alert <- "-"
   }else{
@@ -85,7 +85,7 @@ monthlyTrend <- function(cname, standardMonth, total, SDmonth, mon){
 }
 
 statOutput <- function(SDmonth, OBmonth){
-  setwd("C:/Users/Lily/Documents/GA/R/report/2017/Monthly/trend/")
+  setwd("C:/Users/Lily/Documents/GA/R/report/2017/bi-weekly/trend/")
   clist <- list("Australia","Austria","Belgium","Canada","Czechia","Denmark","France","Germany","Greece","Hong Kong","Hungary","India","Iran","Israel","Italy","Japan","Mexico","Netherlands","Norway","Poland","Portugal","Romania","South Africa","South Korea","Spain","Sweden","Switzerland","Taiwan","Thailand","Turkey","United Kingdom","United States")
   report <- read.csv(paste(SDmonth, "/", SDmonth, ".csv", sep=""), header=T)
   
@@ -100,5 +100,17 @@ statOutput <- function(SDmonth, OBmonth){
   write.csv(C, paste(OBmonth, "/", OBmonth, ".csv", sep=""))
   return(C)
 }
-makeFolder("June")
-statOutput("May", "June")
+
+statOutput("May", "0529-0609")
+
+makeFolder("0403-0414")
+A <- as.data.frame(lapply(clist, monthlyTrend, "Q1", "Q1", "0403-0414"))
+colnames(A) <- clist
+B <- t(A)
+colnames(B) <- c("mean", "std", "upper", "lower", "U_count", "L_count", "total", "U_alert", "L_alert", "lastMonNumber", "standardMonth")
+C <- as.data.frame(B)
+lan_list<- c("en-au", "", "", "", "cs-cz", "", "fr-fr", "de-de", "", "zh-hk", "", "en-in", "", "", "it-it", "ja-jp", "es-mx", "nl-nl", "", "pl-pl", "pt-pt", "", "", "ko-kr", "es-es", "sv-se", "", "zh-tw", "th-th", "", "en-uk", "en-us")
+C$lan <- lan_list
+as.data.frame(C)
+write.csv(C, paste("0403-0414", "/", "0403-0414", ".csv", sep=""))
+# monthlyTrend <- function(cname, standardMonth, total, SDmonth, mon)
