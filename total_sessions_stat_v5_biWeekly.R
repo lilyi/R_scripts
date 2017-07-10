@@ -61,13 +61,15 @@ monthlyTrend <- function(cname, standardMonth, SDmonth, mon){
     scale_colour_manual("legend", values = c("#CC66FF", "#333333")) 
   ggsave(paste(mon, "/", cname, "_", standardMonth, ".png", sep=""),p)
   ###
-  lastMonNumber <- format(M_data$date, "%m")[length(M_data$date)]
-  last_mon <- M_data[format(M_data$date, "%m")==lastMonNumber,5]
-  # print(last_mon)
-  last_mon <- last_mon[!is.na(last_mon)]
-  # print(last_mon)
-  U_count <- sum(last_mon > upper)
-  L_count <- -sum(last_mon < lower)
+  fromMonNumber <- format(M_data$date, "%m")[1]
+  
+  
+  # from_mon <- M_data[format(M_data$date, "%m")==fromMonNumber,5]
+  # # print(from_mon)
+  M_data_CMA <- M_data$CMA[!is.na(M_data$CMA)]
+  # # print(from_mon)
+  U_count <- sum(M_data_CMA > upper)
+  L_count <- -sum(M_data_CMA < lower)
   total <- U_count + L_count
   if(total > 3){
     U_alert <- "+"
@@ -81,36 +83,37 @@ monthlyTrend <- function(cname, standardMonth, SDmonth, mon){
   }
   
   write.csv(M_data, paste(mon, "/", cname, ".csv", sep=""))
-  return(c(mean, std, upper,lower, U_count, L_count, total, U_alert, L_alert, lastMonNumber, standardMonth))
+  return(c(mean, std, upper,lower, U_count, L_count, total, U_alert, L_alert, fromMonNumber, standardMonth))
 }
 
-statOutput <- function(SDmonth, OBmonth){
-  setwd("C:/Users/Lily/Documents/GA/R/report/2017/bi-weekly/trend/")
-  clist <- list("Australia","Austria","Belgium","Canada","Czechia","Denmark","France","Germany","Greece","Hong Kong","Hungary","India","Iran","Israel","Italy","Japan","Mexico","Netherlands","Norway","Poland","Portugal","Romania","South Africa","South Korea","Spain","Sweden","Switzerland","Taiwan","Thailand","Turkey","United Kingdom","United States")
-  report <- read.csv(paste(SDmonth, "/", SDmonth, ".csv", sep=""), header=T)
-  
-  A <- apply(report[, c(1,12,8)], 1, function(x) monthlyTrend(x[1], x[2], x[3], SDmonth, OBmonth))
-  colnames(A) <- clist
-  B <- t(A)
-  colnames(B) <- c("mean", "std", "upper", "lower", "U_count", "L_count", "total", "U_alert", "L_alert", "lastMonNumber", "standardMonth")
-  C <- as.data.frame(B)
-  lan_list<- c("en-au", "", "", "", "cs-cz", "", "fr-fr", "de-de", "", "zh-hk", "", "en-in", "", "", "it-it", "ja-jp", "es-mx", "nl-nl", "", "pl-pl", "pt-pt", "", "", "ko-kr", "es-es", "sv-se", "", "zh-tw", "th-th", "", "en-uk", "en-us")
-  C$lan <- lan_list
-  as.data.frame(C)
-  write.csv(C, paste(OBmonth, "/", OBmonth, ".csv", sep=""))
-  return(C)
-}
+# statOutput <- function(SDmonth, OBmonth){
+#   setwd("C:/Users/Lily/Documents/GA/R/report/2017/bi-weekly/trend/")
+#   clist <- list("Australia","Austria","Belgium","Canada","Czechia","Denmark","France","Germany","Greece","Hong Kong","Hungary","India","Iran","Israel","Italy","Japan","Mexico","Netherlands","Norway","Poland","Portugal","Romania","South Africa","South Korea","Spain","Sweden","Switzerland","Taiwan","Thailand","Turkey","United Kingdom","United States")
+#   report <- read.csv(paste(SDmonth, "/", SDmonth, ".csv", sep=""), header=T)
+#   
+#   A <- apply(report[, c(1,12,8)], 1, function(x) monthlyTrend(x[1], x[2], x[3], SDmonth, OBmonth))
+#   colnames(A) <- clist
+#   B <- t(A)
+#   colnames(B) <- c("mean", "std", "upper", "lower", "U_count", "L_count", "total", "U_alert", "L_alert", "lastMonNumber", "standardMonth")
+#   C <- as.data.frame(B)
+#   lan_list<- c("en-au", "", "", "", "cs-cz", "", "fr-fr", "de-de", "", "zh-hk", "", "en-in", "", "", "it-it", "ja-jp", "es-mx", "nl-nl", "", "pl-pl", "pt-pt", "", "", "ko-kr", "es-es", "sv-se", "", "zh-tw", "th-th", "", "en-uk", "en-us")
+#   C$lan <- lan_list
+#   as.data.frame(C)
+#   write.csv(C, paste(OBmonth, "/", OBmonth, ".csv", sep=""))
+#   return(C)
+# }
 
-statOutput("May", "0529-0609")
-
-makeFolder("0403-0414")
-A <- as.data.frame(lapply(clist, monthlyTrend, "Q1", "Q1", "0403-0414"))
+# statOutput("May", "0529-0609")
+biweekDate <- "0529-0609"
+makeFolder(biweekDate)
+clist <- list("Australia","Austria","Belgium","Canada","Czechia","Denmark","France","Germany","Greece","Hong Kong","Hungary","India","Iran","Israel","Italy","Japan","Mexico","Netherlands","Norway","Poland","Portugal","Romania","South Africa","South Korea","Spain","Sweden","Switzerland","Taiwan","Thailand","Turkey","United Kingdom","United States")
+A <- as.data.frame(lapply(clist, monthlyTrend, "April", "April", biweekDate))
 colnames(A) <- clist
 B <- t(A)
-colnames(B) <- c("mean", "std", "upper", "lower", "U_count", "L_count", "total", "U_alert", "L_alert", "lastMonNumber", "standardMonth")
+colnames(B) <- c("mean", "std", "upper", "lower", "U_count", "L_count", "total", "U_alert", "L_alert", "fromMonNumber", "standardMonth")
 C <- as.data.frame(B)
 lan_list<- c("en-au", "", "", "", "cs-cz", "", "fr-fr", "de-de", "", "zh-hk", "", "en-in", "", "", "it-it", "ja-jp", "es-mx", "nl-nl", "", "pl-pl", "pt-pt", "", "", "ko-kr", "es-es", "sv-se", "", "zh-tw", "th-th", "", "en-uk", "en-us")
 C$lan <- lan_list
 as.data.frame(C)
-write.csv(C, paste("0403-0414", "/", "0403-0414", ".csv", sep=""))
+write.csv(C, paste(biweekDate, "/", biweekDate, ".csv", sep=""))
 # monthlyTrend <- function(cname, standardMonth, total, SDmonth, mon)
