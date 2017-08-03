@@ -104,16 +104,16 @@ monthlyTrend <- function(cname, standardMonth, SDmonth, mon){
 # }
 
 # statOutput("May", "0529-0609")
-biweekDate <- "0529-0609"
+biweekDate <- "0710-0721"
 makeFolder(biweekDate)
 clist <- list("Australia","Austria","Belgium","Canada","Czechia","Denmark","France","Germany","Greece","Hong Kong","Hungary","India","Iran","Israel","Italy","Japan","Mexico","Netherlands","Norway","Poland","Portugal","Romania","South Africa","South Korea","Spain","Sweden","Switzerland","Taiwan","Thailand","Turkey","United Kingdom","United States")
-A <- as.data.frame(lapply(clist, monthlyTrend, "April", "April", biweekDate))
+A <- as.data.frame(lapply(clist, monthlyTrend, "June", "June", biweekDate))
 colnames(A) <- clist
 B <- t(A)
 colnames(B) <- c("mean", "std", "upper", "lower", "U_count", "L_count", "total", "U_alert", "L_alert", "fromMonNumber", "standardMonth")
-C <- as.data.frame(B)
+C_June <- as.data.frame(B)
 lan_list<- c("en-au", "", "", "", "cs-cz", "", "fr-fr", "de-de", "", "zh-hk", "", "en-in", "", "", "it-it", "ja-jp", "es-mx", "nl-nl", "", "pl-pl", "pt-pt", "", "", "ko-kr", "es-es", "sv-se", "", "zh-tw", "th-th", "", "en-uk", "en-us")
-C$lan <- lan_list
-as.data.frame(C)
-write.csv(C, paste(biweekDate, "/", biweekDate, ".csv", sep=""))
+C_June$lan <- lan_list
+as.data.frame(C_June)
+write.csv(C_June, paste(biweekDate, "/", biweekDate, ".csv", sep=""))
 # monthlyTrend <- function(cname, standardMonth, total, SDmonth, mon)
